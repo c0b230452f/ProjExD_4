@@ -130,7 +130,6 @@ class Bird(pg.sprite.Sprite):
             self.image = self.imgs[self.dire]
         screen.blit(self.image, self.rect)
 
-
 class Bomb(pg.sprite.Sprite):
     """
     爆弾に関するクラス
