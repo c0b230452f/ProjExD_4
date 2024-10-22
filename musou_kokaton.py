@@ -8,6 +8,7 @@ import pygame as pg
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -35,6 +36,30 @@ def calc_orientation(org: pg.Rect, dst: pg.Rect) -> tuple[float, float]:
     x_diff, y_diff = dst.centerx-org.centerx, dst.centery-org.centery
     norm = math.sqrt(x_diff**2+y_diff**2)
     return x_diff/norm, y_diff/norm
+
+
+class Gravity(pg.sprite.Sprite):
+    """
+    追加機能2：重力場に関するクラス
+    """
+    def __init__(self, screen, life = 400):
+        """
+        重力場のSurfaceと対応するRectを生成する
+        """
+        super().__init__()
+        self.life = life
+        self.image = pg.Surface((WIDTH, HEIGHT))
+        pg.draw.rect(self.image, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
+        self.image.set_alpha(128)
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        """
+        lifeを1減算し、0未満になったらkillする
+        """
+        self.life -= 1
+        if self.life <= 0:
+            self.kill()
 
 
 class Bird(pg.sprite.Sprite):
@@ -253,6 +278,7 @@ def main():
     score = Score()
 
     bird = Bird(3, (900, 400))
+    gravity_group = pg.sprite.Group()  # gravityのGruopオブジェクトの生成
     bombs = pg.sprite.Group()
     beams = pg.sprite.Group()
     exps = pg.sprite.Group()
@@ -267,7 +293,16 @@ def main():
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 beams.add(Beam(bird))
+            
+            if key_lst[pg.K_RETURN]:  # RETURNを押したら
+                if score.value >= 200:  # scoreが200以上なら
+                    gravity = Gravity(screen)  # Gravityクラスを呼び出す
+                    gravity_group.add(gravity)  # インスタンスをGroupオブジェクトに追加
+                    score.value -= 200  # 重力場呼び出すとき使ったスコア文を引く
+           
         screen.blit(bg_img, [0, 0])
+        gravity_group.update()  # gravityのGroupオブジェクトに含まれるインスタンスをすべて更新
+        gravity_group.draw(screen)  # gravityのGruopに含まれるインスタンスをすべて描画
 
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy())
@@ -285,6 +320,15 @@ def main():
         for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():
             exps.add(Explosion(bomb, 50))  # 爆発エフェクト
             score.value += 1  # 1点アップ
+
+        for bomb in pg.sprite.groupcollide(bombs, gravity_group, True, False).keys():
+            exps.add(Explosion(bomb, 50)) # 爆発エフェクト
+            score.value += 1  # 1点アップ
+            
+        for emy in pg.sprite.groupcollide(emys, gravity_group, True, False).keys():
+            exps.add(Explosion(emy, 100))  # 爆発エフェクト
+            score.value += 10  # 10点アップ
+            bird.change_img(6, screen)  # こうかとん喜びエフェクト
 
         if len(pg.sprite.spritecollide(bird, bombs, True)) != 0:
             bird.change_img(8, screen) # こうかとん悲しみエフェクト
