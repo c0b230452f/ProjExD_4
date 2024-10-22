@@ -187,7 +187,6 @@ class NeoBeam():
         step = 100 // (self.num-1)  # ステップ数を計算
         for r in range(-50, +51, step):
             bm_lst.append(Beam(self.bird, r))  # Beamインスタンスを生成し、リストに追加
-        print("ok")
         return bm_lst
 
 
