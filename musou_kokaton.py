@@ -145,7 +145,7 @@ class Beam(pg.sprite.Sprite):
         """
         ビーム画像Surfaceを生成する
         引数 bird：ビームを放つこうかとん
-        引数 angle0：弾幕の回転角度の加算量
+        引数 angle0：弾幕用ビームの回転角度の加算量
         """
         super().__init__()
         self.vx, self.vy = bird.dire
