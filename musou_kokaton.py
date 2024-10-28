@@ -354,7 +354,11 @@ def main():
             if event.type == pg.QUIT:
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beams.add(Beam(bird))
+                if key_lst[pg.K_z]:  # Zキーも押していたら
+                    many_beams = NeoBeam(bird, num=5)
+                    beams.add(many_beams.gen_beams())
+                else:
+                    beams.add(Beam(bird))
             
             if key_lst[pg.K_RETURN]:  # RETURNを押したら
                 if score.value >= 200:  # scoreが200以上なら
