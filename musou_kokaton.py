@@ -286,7 +286,7 @@ def main():
             if event.type == pg.QUIT:
                 return 0
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                if key_lst[pg.K_z]:
+                if key_lst[pg.K_z]:  # Zキーも押していたら
                     many_beams = NeoBeam(bird, num=5)
                     beams.add(many_beams.gen_beams())
                 else:
