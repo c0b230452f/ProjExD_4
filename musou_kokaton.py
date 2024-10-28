@@ -195,6 +195,28 @@ class Beam(pg.sprite.Sprite):
             self.kill()
 
 
+class NeoBeam():
+    """
+    分散したビームを放つ弾幕攻撃を生成するクラス
+    """
+
+    def __init__(self, bird: Bird, num: int|float):
+        """
+        弾幕用のBeamに関する設定
+        引数 bird：ビームを放つこうかとん
+        引数 num：ビームの数
+        """
+        self.bird = bird
+        self.num = num
+    
+    def gen_beams(self):
+        bm_lst = []  # Beamインスタンスを格納するリスト
+        step = 100 // (self.num-1)  # ステップ数を計算
+        for r in range(-50, +51, step):
+            bm_lst.append(Beam(self.bird, r))  # Beamインスタンスを生成し、リストに追加
+        return bm_lst
+
+
 class Explosion(pg.sprite.Sprite):
     """
     爆発に関するクラス
